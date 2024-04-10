@@ -89,11 +89,13 @@ func newCommand() *cobra.Command {
 				fmt.Println(version.GetVersion())
 				return nil
 			}
+			logger := log.New()
 			setLogLevel(logLevel)
 			if logFormat != "" {
 				log.SetFormatter(createFormatter(logFormat))
+				logger.SetFormatter(createFormatter(logFormat))
 			}
-			logutil.SetKLogLogger(log.New())
+			logutil.SetKLogLogger(logger)
 			logutil.SetKLogLevel(klogLevel)
 			log.WithField("version", version.GetVersion()).Info("Argo Rollouts starting")
 
@@ -142,7 +144,7 @@ func newCommand() *cobra.Command {
 			instanceIDTweakListFunc := func(options *metav1.ListOptions) {
 				options.LabelSelector = instanceIDSelector.String()
 			}
-			jobKubeClient, err := metricproviders.GetAnalysisJobClientset(kubeClient)
+			jobKubeClient, _, err := metricproviders.GetAnalysisJobClientset(kubeClient)
 			checkError(err)
 			jobNs := metricproviders.GetAnalysisJobNamespace()
 			if jobNs == "" {

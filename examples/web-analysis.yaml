@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+spec:
+  args:
+  - name: service-name
+  metrics:
+  - name: webmetric
+    successCondition: "result.ok && result.successPercent >= 0.90"
+    provider:
+      web:
+        url: "http://rollout-test-helm-guestbook-preview.testapp.svc.cluster.local"
+        insecure: true
+        jsonPath: "{$.data}"    
